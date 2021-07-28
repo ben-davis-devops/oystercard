@@ -1,6 +1,6 @@
 class Oystercard
   attr_reader :balance, :entry_station, :exit_station
-  attr_accessor :journey, :journey_log
+  attr_accessor :journey_log
 
   DEFAULT_BALANCE = 0
   MAXIMUM_BALANCE = 90
@@ -8,7 +8,7 @@ class Oystercard
 
   def initialize(balance = DEFAULT_BALANCE)
     @balance = balance
-    @journey = journey
+    # @journey = journey
     @entry_station = nil
     @exit_station = nil
     @journey_log = []
@@ -22,7 +22,6 @@ class Oystercard
   def touch_in(station)
     raise 'You cannot ride - you broke' if no_funds
     
-    @journey = true
     @entry_station = station
   end
 
@@ -30,9 +29,8 @@ class Oystercard
     deduct(MINIMUM_FARE)
     @exit_station = station
     # add journey_log here
-    journey_log.push({entry_station => station, exit_station => station})
+    add_journey
     @entry_station = nil
-    @journey = false
   end
 
   def in_journey?
@@ -47,6 +45,10 @@ class Oystercard
 
   def deduct(fare)
     @balance -= fare
+  end
+
+  def add_journey
+    @journey_log.push({entry: @entry_station, exit: @exit_station})
   end
 
 end
