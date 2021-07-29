@@ -1,6 +1,7 @@
+require_relative 'journey.rb'
+
 class Oystercard
-  attr_reader :balance, :entry_station, :exit_station
-  attr_accessor :journey_log
+  attr_reader :balance, :journey_log
 
   DEFAULT_BALANCE = 0
   MAXIMUM_BALANCE = 90
@@ -8,29 +9,23 @@ class Oystercard
 
   def initialize(balance = DEFAULT_BALANCE)
     @balance = balance
-    # @journey = journey
-    @entry_station = nil
-    @exit_station = nil
-    @journey_log = []
+    @journey = Journey.new
+
   end
 
   def top_up(money)
     @balance += money
-    raise 'Maximum balance exceeded' if @balance > MAXIMUM_BALANCE 
+    raise 'Maximum balance exceeded' if @balance > MAXIMUM_BALANCE
   end
 
-  def touch_in(station)
+  def touch_in(name, zone)
     raise 'You cannot ride - you broke' if no_funds
-    
-    @entry_station = station
+    @journey.start(name, zone)
   end
 
-  def touch_out(station)
+  def touch_out(name, zone)
+    @journey.finish(name, zone)
     deduct(MINIMUM_FARE)
-    @exit_station = station
-    # add journey_log here
-    add_journey
-    @entry_station = nil
   end
 
   def in_journey?
@@ -45,10 +40,6 @@ class Oystercard
 
   def deduct(fare)
     @balance -= fare
-  end
-
-  def add_journey
-    @journey_log.push({entry: @entry_station, exit: @exit_station})
   end
 
 end

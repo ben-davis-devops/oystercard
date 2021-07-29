@@ -22,8 +22,7 @@ describe Oystercard do
   end 
 
   it 'throws error when exceeding maximum balance' do
-    subject.top_up(90)
-    expect{ subject.top_up(5)}.to raise_error 'Maximum balance exceeded'
+    expect{ subject.top_up((Oystercard::MAXIMUM_BALANCE + 1))}.to raise_error 'Maximum balance exceeded'
   end
 
   # it 'deducts the fare from balance' do 
@@ -45,7 +44,7 @@ describe Oystercard do
 
   it 'is user in journey?' do
     subject.top_up(50)
-    subject.touch_in(entry_station)
+    subject.touch_in(entry_station, 1)
     expect(subject).to be_in_journey
   end
 
@@ -58,27 +57,27 @@ describe Oystercard do
 
   it '@balance must be at least 1 to touch_in' do
     subject.top_up(0)
-    expect{ subject.touch_in(entry_station) }.to raise_error 'You cannot ride - you broke'
+    expect{ subject.touch_in(entry_station, 1) }.to raise_error 'You cannot ride - you broke'
   end 
 
   it 'fare deducted from balance' do
     subject.top_up(10)
-    subject.touch_in(entry_station)
-    expect {subject.touch_out(exit_station)}.to change {subject.balance}.by(-Oystercard::MINIMUM_FARE)
+    subject.touch_in(entry_station, 1)
+    expect {subject.touch_out(exit_station, 1)}.to change {subject.balance}.by(-Oystercard::MINIMUM_FARE)
   end
   
-  it 'stores the entry station' do
-    subject.top_up(10)
-    subject.touch_in(entry_station)
-    expect(subject.entry_station).to eq entry_station
-  end
+  # it 'stores the entry station' do
+  #   subject.top_up(10)
+  #   subject.touch_in(name, 1)
+  #   expect(subject.entry_station).to eq(name, 1)
+  # end
 
-  it 'stores the exit station' do
-    subject.top_up(10)
-    subject.touch_in(entry_station)
-    subject.touch_out(exit_station)
-    expect(subject.exit_station).to eq exit_station
-  end
+  # it 'stores the exit station' do
+  #   subject.top_up(10)
+  #   subject.touch_in(entry_station, 1)
+  #   subject.touch_out(exit_station, 1)
+  #   expect(subject.exit_station).to eq(exit_station, 1)
+  # end
 
   it 'has an empty list of journeys by default' do
     expect(subject.journey_log).to be_empty
